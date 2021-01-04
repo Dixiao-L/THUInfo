@@ -13,14 +13,9 @@ import {
 	primaryScheduleThunk,
 	secondaryScheduleThunk,
 } from "../../redux/actions/schedule";
-import {
-	Exam,
-	Lesson,
-	LessonType,
-	matchHiddenRules,
-} from "../../helper/src/models/schedule/schedule";
+import {Exam, Lesson, LessonType, matchHiddenRules} from "../../helper/src";
 import {Col, Grid, Row} from "react-native-easy-grid";
-import {Calendar} from "../../helper/src/models/schedule/calendar";
+import {CalendarClass} from "../../helper/src";
 import {ScheduleNav} from "./scheduleStack";
 import {getStr} from "../../utils/i18n";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -146,7 +141,7 @@ const GridColumn = ({
 		<GridRow
 			key={0}
 			span={headerSpan}
-			text={`${new Calendar(week, day).format("MM.DD")}\n${
+			text={`${new CalendarClass(week, day).format("MM.DD")}\n${
 				getStr("dayOfWeek")[day]
 			}`}
 			unitHeight={unitHeight}
@@ -217,7 +212,7 @@ const OptionButton = ({
 };
 
 const ScheduleUI = (props: ScheduleProps) => {
-	const [week, setWeek] = useState(new Calendar().weekNumber);
+	const [week, setWeek] = useState(new CalendarClass().weekNumber);
 
 	const [overlap, setOverlap] = useState(false);
 
@@ -227,7 +222,7 @@ const ScheduleUI = (props: ScheduleProps) => {
 	const theme = themes[themeName];
 
 	useEffect(() => {
-		if (Calendar.semesterId !== props.cache) {
+		if (CalendarClass.semesterId !== props.cache) {
 			console.log(
 				"Schedule: Corresponding cache not found. Auto fetch from server.",
 			);
@@ -266,7 +261,7 @@ const ScheduleUI = (props: ScheduleProps) => {
 					/>
 				</TouchableOpacity>
 				<Text
-					onPress={() => setWeek(new Calendar().weekNumber)}
+					onPress={() => setWeek(new CalendarClass().weekNumber)}
 					style={{
 						fontSize: 18,
 						textAlign: "center",
@@ -276,14 +271,14 @@ const ScheduleUI = (props: ScheduleProps) => {
 				</Text>
 				<TouchableOpacity
 					onPress={() =>
-						setWeek((o) => (week < Calendar.weekCount ? o + 1 : o))
+						setWeek((o) => (week < CalendarClass.weekCount ? o + 1 : o))
 					}
-					disabled={week >= Calendar.weekCount}
+					disabled={week >= CalendarClass.weekCount}
 					style={{padding: 8}}>
 					<Icon
 						name="chevron-right"
 						size={24}
-						color={week < Calendar.weekCount ? "black" : "#888"}
+						color={week < CalendarClass.weekCount ? "black" : "#888"}
 					/>
 				</TouchableOpacity>
 			</View>

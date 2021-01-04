@@ -1,4 +1,3 @@
-import {retrieve} from "../helper/src/lib/core";
 import {
 	ANDROID_APP_CENTER_URL,
 	BROADCAST_URL,
@@ -9,6 +8,7 @@ import {
 } from "../constants/strings";
 import {currState, helper} from "../redux/store";
 import {Platform} from "react-native";
+import {retrieve} from "../utils/network";
 
 interface UpdateInfo {
 	versionName: string;

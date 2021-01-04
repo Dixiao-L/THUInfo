@@ -12,12 +12,8 @@ import {
 	SECONDARY_SCHEDULE_REQUEST,
 	SECONDARY_SCHEDULE_SUCCESS,
 } from "../constants";
-import {Calendar} from "../../helper/src/models/schedule/calendar";
-import {
-	Exam,
-	Lesson,
-	LessonType,
-} from "../../helper/src/models/schedule/schedule";
+import {CalendarClass, LessonTypeEnum} from "../../helper/src";
+import {Exam, Lesson} from "../../helper/src";
 
 export enum Choice {
 	ONCE,
@@ -55,7 +51,7 @@ export const schedule = (
 				...state,
 				primary: action.payload.primary,
 				exam: action.payload.exam,
-				cache: Calendar.semesterId,
+				cache: CalendarClass.semesterId,
 				shortenMap: addToDefaultShortenMap(
 					state.shortenMap,
 					action.payload.primary,
@@ -77,7 +73,7 @@ export const schedule = (
 			return {
 				...state,
 				secondary: action.payload.secondary,
-				cache: Calendar.semesterId,
+				cache: CalendarClass.semesterId,
 				shortenMap: addToDefaultShortenMap(
 					state.shortenMap,
 					action.payload.secondary,
@@ -105,7 +101,7 @@ export const schedule = (
 		}
 		case SCHEDULE_DEL_OR_HIDE: {
 			const [lesson, choice] = action.payload;
-			if (lesson.type === LessonType.CUSTOM) {
+			if (lesson.type === LessonTypeEnum.CUSTOM) {
 				return {
 					...state,
 					custom:

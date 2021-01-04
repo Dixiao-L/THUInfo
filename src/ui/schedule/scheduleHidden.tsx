@@ -4,7 +4,7 @@ import React from "react";
 import {FlatList, Text, TouchableOpacity, View, Dimensions} from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import {State} from "../../redux/store";
-import {Lesson} from "../../helper/src/models/schedule/schedule";
+import {Lesson} from "../../helper/src";
 import {SCHEDULE_REMOVE_HIDDEN_RULE} from "../../redux/constants";
 import {getStr} from "../../utils/i18n";
 

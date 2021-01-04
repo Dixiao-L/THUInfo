@@ -33,7 +33,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import {ThemeContext} from "../../assets/themes/context";
 import themes from "../../assets/themes/themes";
-import {newsSlice, sourceTag} from "../../helper/src/models/news/news";
+import {newsSlice, sourceTag} from "../../helper/src";
 
 dayjs.extend(customParseFormat);
 
