@@ -1,12 +1,12 @@
 import {Alert, Text, TouchableOpacity, View} from "react-native";
 import React from "react";
-import {cancelBooking, getBookingRecords} from "../../network/library";
 import {simpleRefreshListScreen} from "../../components/settings/simpleRefreshListScreen";
 import {getStr} from "../../utils/i18n";
 import Snackbar from "react-native-snackbar";
+import {helper} from "../../redux/store";
 
 export const LibBookRecordScreen = simpleRefreshListScreen(
-	getBookingRecords,
+	helper.getBookingRecords,
 	({pos, time, status, delId}, refresh) => {
 		const [lib, seat] = pos.split(":");
 		return (
@@ -35,7 +35,8 @@ export const LibBookRecordScreen = simpleRefreshListScreen(
 										{
 											text: getStr("confirm"),
 											onPress: () => {
-												cancelBooking(delId)
+												helper
+													.cancelBooking(delId)
 													.then(() =>
 														Snackbar.show({
 															text: getStr("cancelSucceeded"),

@@ -11,10 +11,10 @@ import {
 	SET_REMAINDER_SHIFT,
 	SET_SCHEDULE_HEIGHT,
 } from "../constants";
-import {retrieve} from "../../network/core";
+import {retrieve} from "../../helper/src/lib/core";
 import {CALENDAR_CONFIG_URL} from "../../constants/strings";
 import {store} from "../store";
-import {Calendar} from "../../utils/calendar";
+import {Calendar} from "../../helper/src/models/schedule/calendar";
 
 export type CalendarConfig = {
 	firstDay: string;

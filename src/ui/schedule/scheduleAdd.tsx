@@ -9,11 +9,11 @@ import {
 import {connect} from "react-redux";
 import {ThemeContext} from "../../assets/themes/context";
 import themes from "../../assets/themes/themes";
-import {Calendar} from "../../utils/calendar";
+import {Calendar} from "../../helper/src/models/schedule/calendar";
 import themedStyles from "../../utils/themedStyles";
 import {getStr} from "../../utils/i18n";
 import {ScheduleNav} from "./scheduleStack";
-import {Lesson, LessonType} from "../../models/schedule/schedule";
+import {Lesson, LessonType} from "../../helper/src/models/schedule/schedule";
 import {SCHEDULE_ADD_CUSTOM} from "../../redux/constants";
 
 interface ScheduleAddProps {

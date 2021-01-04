@@ -9,15 +9,14 @@ import {
 	Text,
 	View,
 } from "react-native";
-import {getExpenditures} from "../../network/basics";
-import {Record} from "../../models/home/expenditure";
-import {Calendar} from "../../utils/calendar";
+import {Record} from "../../helper/src/models/home/expenditure";
+import {Calendar} from "../../helper/src/models/schedule/calendar";
 import Snackbar from "react-native-snackbar";
 import {getStr} from "../../utils/i18n";
 import {DatePickerTrigger} from "../../components/DatePickerTrigger";
 import {ThemeContext} from "../../assets/themes/context";
 import themes from "../../assets/themes/themes";
-import {mocked} from "../../redux/store";
+import {helper} from "../../redux/store";
 import {connect} from "react-redux";
 import {State} from "../../redux/store";
 
@@ -75,7 +74,8 @@ export const ExpenditureUI = ({shift}: {shift: number}) => {
 
 	const refresh = () => {
 		setRefreshing(true);
-		getExpenditures(beg, end)
+		helper
+			.getExpenditures(beg, end)
 			.then(setExpenditures)
 			.catch(() => {
 				Snackbar.show({
@@ -99,7 +99,7 @@ export const ExpenditureUI = ({shift}: {shift: number}) => {
 					money={refreshing ? 0 : remainder + shift}
 				/>
 			</View>
-			{!mocked() && (
+			{!helper.mocked() && (
 				<View style={styles.header}>
 					<DatePickerTrigger
 						date={beg}

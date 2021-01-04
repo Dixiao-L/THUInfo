@@ -12,8 +12,12 @@ import {
 	SECONDARY_SCHEDULE_REQUEST,
 	SECONDARY_SCHEDULE_SUCCESS,
 } from "../constants";
-import {Calendar} from "../../utils/calendar";
-import {Exam, Lesson, LessonType} from "../../models/schedule/schedule";
+import {Calendar} from "../../helper/src/models/schedule/calendar";
+import {
+	Exam,
+	Lesson,
+	LessonType,
+} from "../../helper/src/models/schedule/schedule";
 
 export enum Choice {
 	ONCE,

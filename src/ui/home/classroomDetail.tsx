@@ -6,14 +6,14 @@ import {
 	View,
 } from "react-native";
 import React, {useContext, useEffect, useRef, useState} from "react";
-import {getClassroomState} from "../../network/basics";
 import {ClassroomDetailRouteProp} from "./homeStack";
 import {getStr} from "../../utils/i18n";
 import Snackbar from "react-native-snackbar";
-import {Calendar} from "../../utils/calendar";
+import {Calendar} from "../../helper/src/models/schedule/calendar";
 import Icon from "react-native-vector-icons/FontAwesome";
 import {ThemeContext} from "../../assets/themes/context";
 import themes from "../../assets/themes/themes";
+import {helper} from "../../redux/store";
 
 const colors = ["#26A69A", "#FFA726", "#29B6F6", "#868686", "#AB47BC"];
 
@@ -38,7 +38,8 @@ export const ClassroomDetailScreen = ({
 
 	const refresh = () => {
 		setRefreshing(true);
-		getClassroomState(name, data[0])
+		helper
+			.getClassroomState(name, data[0])
 			.then((res) =>
 				setData((o) => {
 					if (o[0] === data[0]) {
@@ -73,17 +74,17 @@ export const ClassroomDetailScreen = ({
 			data[0] > 1 &&
 			(prev.current === undefined || prev.current[0] !== data[0] - 1)
 		) {
-			getClassroomState(name, data[0] - 1).then(
-				(res) => (prev.current = [data[0] - 1, res]),
-			);
+			helper
+				.getClassroomState(name, data[0] - 1)
+				.then((res) => (prev.current = [data[0] - 1, res]));
 		}
 		if (
 			data[0] < Calendar.weekCount &&
 			(next.current === undefined || next.current[0] !== data[0] + 1)
 		) {
-			getClassroomState(name, data[0] + 1).then(
-				(res) => (next.current = [data[0] + 1, res]),
-			);
+			helper
+				.getClassroomState(name, data[0] + 1)
+				.then((res) => (next.current = [data[0] + 1, res]));
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currWeek]);

@@ -29,13 +29,13 @@ import {
 	Person,
 	toPersons,
 } from "../models/home/assessment";
-import "../../src/utils/extensions";
+import "../utils/extensions";
 import {encodeToGb2312} from "../utils/encodeToGb2312";
 import {JoggingRecord} from "../models/home/jogging";
-import {currState, mocked} from "../redux/store";
 import {Buffer} from "buffer";
 import excelToJson from "convert-excel-to-json";
 import dayjs from "dayjs";
+import {InfoHelper} from "../index";
 type Cheerio = ReturnType<typeof cheerio>;
 type Element = Cheerio[number];
 type TagElement = Element & {type: "tag"};
@@ -52,8 +52,13 @@ const gradeToOldGPA = new Map<string, number>([
 	["D", 1.0],
 ]);
 
-export const getReport = (): Promise<Course[]> =>
-	mocked()
+export const getReport = (
+	helper: InfoHelper,
+	graduate: boolean,
+	bx: boolean,
+	newGPA: boolean,
+): Promise<Course[]> =>
+	helper.mocked()
 		? Promise.resolve([
 				{
 					credit: 2,
@@ -135,21 +140,18 @@ export const getReport = (): Promise<Course[]> =>
 				// eslint-disable-next-line no-mixed-spaces-and-tabs
 		  ])
 		: retryWrapper(
+				helper,
 				792,
 				Promise.all([
 					retrieve(
-						currState().config.graduate
-							? GET_YJS_REPORT_URL
-							: GET_BKS_REPORT_URL,
+						graduate ? GET_YJS_REPORT_URL : GET_BKS_REPORT_URL,
 						INFO_ROOT_URL,
 						undefined,
 						"GBK",
 					),
-					currState().config.bx
+					bx
 						? retrieve(
-								currState().config.graduate
-									? YJS_REPORT_BXR_URL
-									: BKS_REPORT_BXR_URL,
+								graduate ? YJS_REPORT_BXR_URL : BKS_REPORT_BXR_URL,
 								INFO_ROOT_URL,
 								undefined,
 								"GBK",
@@ -182,7 +184,6 @@ export const getReport = (): Promise<Course[]> =>
 							}
 						});
 					}
-					const newGPA = currState().config.newGPA;
 					const result = cheerio("#table1", str)
 						.children()
 						.slice(1)
@@ -213,8 +214,10 @@ export const getReport = (): Promise<Course[]> =>
 				// eslint-disable-next-line no-mixed-spaces-and-tabs
 		  );
 
-export const getAssessmentList = (): Promise<[string, boolean, string][]> =>
-	mocked()
+export const getAssessmentList = (
+	helper: InfoHelper,
+): Promise<[string, boolean, string][]> =>
+	helper.mocked()
 		? Promise.resolve([
 				["微积分A(2)", true, "Mr. Z"],
 				["高等线性代数选讲", true, "Mr. L"],
@@ -227,6 +230,7 @@ export const getAssessmentList = (): Promise<[string, boolean, string][]> =>
 				// eslint-disable-next-line no-mixed-spaces-and-tabs
 		  ])
 		: retryWrapper(
+				helper,
 				2005,
 				retrieve(ASSESSMENT_LIST_URL, ASSESSMENT_MAIN_URL).then((str) => {
 					const result = cheerio("tbody", str)
@@ -265,8 +269,11 @@ const makeMockQuestion = (question: string) => ({
 	others: [],
 });
 
-export const getAssessmentForm = (url: string): Promise<Form> =>
-	mocked()
+export const getAssessmentForm = (
+	helper: InfoHelper,
+	url: string,
+): Promise<Form> =>
+	helper.mocked()
 		? Promise.resolve(
 				new Form(
 					[],
@@ -288,6 +295,7 @@ export const getAssessmentForm = (url: string): Promise<Form> =>
 				// eslint-disable-next-line no-mixed-spaces-and-tabs
 		  )
 		: retryWrapper(
+				helper,
 				2005,
 				retrieve(url, ASSESSMENT_MAIN_URL).then((str) => {
 					const $ = cheerio.load(str);
@@ -310,10 +318,14 @@ export const getAssessmentForm = (url: string): Promise<Form> =>
 				// eslint-disable-next-line no-mixed-spaces-and-tabs
 		  );
 
-export const postAssessmentForm = (form: Form): Promise<void> =>
-	mocked()
+export const postAssessmentForm = (
+	helper: InfoHelper,
+	form: Form,
+): Promise<void> =>
+	helper.mocked()
 		? Promise.resolve()
 		: retryWrapper(
+				helper,
 				2005,
 				retrieve(
 					ASSESSMENT_SUBMIT_URL,
@@ -338,8 +350,10 @@ const physicalExamResultTotal = (json: any) =>
 	Number(json.bbmpfs) * 0.2 +
 	Number(json.sgtzfs) * 0.15;
 
-export const getPhysicalExamResult = (): Promise<[string, string][]> =>
-	mocked()
+export const getPhysicalExamResult = (
+	helper: InfoHelper,
+): Promise<[string, string][]> =>
+	helper.mocked()
 		? Promise.resolve([
 				["是否免测", "否"],
 				["免测原因", ""],
@@ -370,6 +384,7 @@ export const getPhysicalExamResult = (): Promise<[string, string][]> =>
 				// eslint-disable-next-line no-mixed-spaces-and-tabs
 		  ])
 		: retryWrapper(
+				helper,
 				792,
 				retrieve(
 					PHYSICAL_EXAM_URL,
@@ -422,8 +437,11 @@ export const getPhysicalExamResult = (): Promise<[string, string][]> =>
 		  );
 
 // TODO: jogging record to be implemented
-export const getJoggingRecord = (): Promise<JoggingRecord[]> =>
+export const getJoggingRecord = (
+	helper: InfoHelper,
+): Promise<JoggingRecord[]> =>
 	retryWrapper(
+		helper,
 		792,
 		retrieve(JOGGING_URL, JOGGING_REFERER, undefined, "GBK"),
 	).then((s) => {
@@ -432,10 +450,11 @@ export const getJoggingRecord = (): Promise<JoggingRecord[]> =>
 	});
 
 export const getExpenditures = (
+	helper: InfoHelper,
 	beg: Date,
 	end: Date,
 ): Promise<[Record[], number, number, number]> =>
-	mocked()
+	helper.mocked()
 		? Promise.resolve([
 				[
 					{
@@ -685,6 +704,7 @@ export const getExpenditures = (
 				// eslint-disable-next-line no-mixed-spaces-and-tabs
 		  ])
 		: retryWrapper(
+				helper,
 				824,
 				retrieve(EXPENDITURE_URL, EXPENDITURE_URL, undefined, "base64").then(
 					(data) => {
@@ -776,12 +796,14 @@ const generatedPattern = [
 ];
 
 export const getClassroomState = (
+	helper: InfoHelper,
 	name: string,
 	week: number,
 ): Promise<[string, number[]][]> =>
-	mocked()
+	helper.mocked()
 		? Promise.resolve(generatedPattern)
 		: retryWrapper(
+				helper,
 				792,
 				retrieve(
 					CLASSROOM_STATE_PREFIX +
@@ -840,10 +862,11 @@ export const getClassroomState = (
 				// eslint-disable-next-line no-mixed-spaces-and-tabs
 		  );
 
-export const loseCard = (): Promise<number> =>
-	mocked()
+export const loseCard = (helper: InfoHelper): Promise<number> =>
+	helper.mocked()
 		? Promise.resolve(2)
 		: retryWrapper(
+				helper,
 				824,
 				retrieve(LOSE_CARD_URL).then((s) => {
 					const index = s.indexOf("var result");

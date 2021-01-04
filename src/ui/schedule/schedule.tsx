@@ -18,9 +18,9 @@ import {
 	Lesson,
 	LessonType,
 	matchHiddenRules,
-} from "../../models/schedule/schedule";
+} from "../../helper/src/models/schedule/schedule";
 import {Col, Grid, Row} from "react-native-easy-grid";
-import {Calendar} from "../../utils/calendar";
+import {Calendar} from "../../helper/src/models/schedule/calendar";
 import {ScheduleNav} from "./scheduleStack";
 import {getStr} from "../../utils/i18n";
 import Icon from "react-native-vector-icons/FontAwesome";

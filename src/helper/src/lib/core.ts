@@ -1,4 +1,3 @@
-import {Auth} from "../redux/states/auth";
 import {
 	CONFIRM_LOGIN_URL,
 	CONTENT_TYPE_FORM,
@@ -28,9 +27,9 @@ import {
 import {Buffer} from "buffer";
 import iconv from "iconv-lite";
 import md5 from "md5";
-import {currState, mocked} from "../redux/store";
 import cheerio from "cheerio";
-import {NetworkRetry} from "../components/easySnackbars";
+import {InfoHelper, MOCK} from "../index";
+import {ValidTickets} from "../models/network";
 
 /**
  * Converts form data into url-encoded format.
@@ -132,10 +131,14 @@ export const retrieve = async (
  * Logs-in to WebVPN, INFO and ZHJW sequentially.
  */
 export const login = async (
+	helper: InfoHelper,
 	userId: string,
 	password: string,
-): Promise<Auth> => {
-	if (mocked()) {
+): Promise<{
+	userId: string;
+	password: string;
+}> => {
+	if (userId === MOCK && password === MOCK) {
 		return {userId: userId, password: password};
 	}
 	const rawResponse = await retrieve(DO_LOGIN_URL, LOGIN_URL, {
@@ -173,8 +176,8 @@ export const login = async (
 /**
  * Gets the user's full name.
  */
-export const getFullName = async (): Promise<string> =>
-	mocked()
+export const getFullName = async (helper: InfoHelper): Promise<string> =>
+	helper.mocked()
 		? "Somebody"
 		: retrieve(PROFILE_URL, PROFILE_REFERER, undefined, "GBK").then((str) => {
 				const key = "report1_3";
@@ -189,15 +192,13 @@ export const getFullName = async (): Promise<string> =>
 /**
  * Logs-out from WebVPN.
  */
-export const logout = async (): Promise<void> => {
-	if (!mocked()) {
+export const logout = async (helper: InfoHelper): Promise<void> => {
+	if (!helper.mocked()) {
 		return connect(LOGOUT_URL);
 	}
 };
 
-type ValidTickets = -1 | 792 | 824 | 2005 | 5000; // -1 for tsinghua home, 5000 for library
-
-export const getTicket = async (target: ValidTickets) => {
+export const getTicket = async (helper: InfoHelper, target: ValidTickets) => {
 	if (target >= 0 && target <= 1000) {
 		return retrieve(INFO_ROOT_URL, PRE_LOGIN_URL, undefined, "UTF-8", 800).then(
 			(str) => {
@@ -212,16 +213,14 @@ export const getTicket = async (target: ValidTickets) => {
 			},
 		);
 	} else if (target === -1) {
-		const userId = currState().auth.userId;
+		const userId = helper.userId;
 		const appId = md5(userId + new Date().getTime());
 		const url = DORM_LOGIN_URL_PREFIX + appId;
 		const post =
 			DORM_LOGIN_POST_PREFIX +
 			userId +
 			DORM_LOGIN_POST_MIDDLE +
-			encodeURIComponent(
-				currState().credentials.dormPassword || currState().auth.password,
-			) +
+			encodeURIComponent(helper.dormPassword || helper.password) +
 			DORM_LOGIN_POST_SUFFIX;
 		return connect(url, url, post)
 			.then(() =>
@@ -237,8 +236,8 @@ export const getTicket = async (target: ValidTickets) => {
 		const redirect = cheerio(
 			"div.wrapper>a",
 			await retrieve(ID_LOGIN_CHECK_URL, LIBRARY_LOGIN_URL, {
-				i_user: currState().auth.userId,
-				i_pass: currState().auth.password,
+				i_user: helper.userId,
+				i_pass: helper.password,
 				i_captcha: "",
 			}),
 		).attr().href;
@@ -249,6 +248,7 @@ export const getTicket = async (target: ValidTickets) => {
 };
 
 export const retryWrapper = async <R>(
+	helper: InfoHelper,
 	target: ValidTickets,
 	operation: Promise<R>,
 ): Promise<R> => {
@@ -256,27 +256,27 @@ export const retryWrapper = async <R>(
 		try {
 			return await operation;
 		} catch {
-			await getTicket(target);
+			await getTicket(helper, target);
 		}
 		console.log(`Getting ticket ${target} failed (${i + 1}/2). Retrying.`);
 	}
 	return operation;
 };
 
-export const performGetTickets = () => {
+export const performGetTickets = (helper: InfoHelper) => {
 	([792, 824, 2005, 5000] as ValidTickets[]).forEach((target) => {
-		getTicket(target)
+		getTicket(helper, target)
 			.then(() => console.log(`Ticket ${target} get.`))
 			.catch(() => console.warn(`Getting ticket ${target} failed.`));
 	});
 };
 
-export const getTickets = () => {
-	if (mocked()) {
+export const getTickets = (helper: InfoHelper) => {
+	if (helper.mocked()) {
 		return;
 	}
-	performGetTickets();
-	getTicket(-1)
+	performGetTickets(helper);
+	getTicket(helper, -1)
 		.then(() => console.log("Ticket -1 get."))
 		.catch(() => console.warn("Getting ticket -1 failed."));
 	setInterval(async () => {
@@ -284,13 +284,13 @@ export const getTickets = () => {
 		const verification = await retrieve(WEB_VPN_ROOT_URL, WEB_VPN_ROOT_URL);
 		if (verification.indexOf("个人信息") === -1) {
 			console.log("Lost connection with school website. Reconnecting...");
-			const {userId, password} = currState().auth;
+			const {userId, password} = helper;
 			try {
-				await login(userId, password);
+				await login(helper, userId, password);
 			} catch (e) {
-				NetworkRetry();
+				console.warn("Login failed!");
 			}
 		}
-		performGetTickets();
+		performGetTickets(helper);
 	}, 60000);
 };

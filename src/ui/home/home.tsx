@@ -11,7 +11,7 @@ import IconDormScore from "../../assets/icons/IconDormScore";
 import zh from "../../assets/translations/zh";
 import {getStr} from "../../utils/i18n";
 import IconHole from "../../assets/icons/IconHole";
-import {mocked} from "../../redux/store";
+import {helper} from "../../redux/store";
 import IconEvaluation from "../../assets/icons/IconEvaluation";
 
 const iconSize = 60;
@@ -99,7 +99,7 @@ export const HomeScreen = ({navigation}: {navigation: HomeNav}) => (
 				<IconDormScore width={iconSize} height={iconSize} />
 			</HomeIcon>
 		</HomeSection>
-		{!mocked() && (
+		{!helper.mocked() && (
 			<HomeSection title="hole">
 				<HomeIcon title="hole" onPress={() => navigation.navigate("HoleList")}>
 					<IconHole width={iconSize} height={iconSize} />

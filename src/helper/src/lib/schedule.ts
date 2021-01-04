@@ -14,13 +14,13 @@ import {
 	parseJSON,
 	parseScript,
 } from "../models/schedule/schedule";
-import {Calendar} from "../utils/calendar";
-import {currState, mocked} from "../redux/store";
+import {Calendar} from "../models/schedule/calendar";
+import {InfoHelper} from "../index";
 
-export const getSchedule = () => {
+export const getSchedule = (helper: InfoHelper, graduate: boolean) => {
 	const format = (c: Calendar) => c.format("YYYYMMDD");
 	const groupSize = 3; // Make sure that `groupSize` is a divisor of `Calendar.weekCount`.
-	return mocked()
+	return helper.mocked()
 		? Promise.resolve([
 				[
 					{
@@ -1045,13 +1045,12 @@ export const getSchedule = () => {
 				// eslint-disable-next-line no-mixed-spaces-and-tabs
 		  ] as [Lesson[], Exam[]])
 		: retryWrapper(
+				helper,
 				792,
 				Promise.all(
 					Array.from(new Array(Calendar.weekCount / groupSize), (_, id) =>
 						retrieve(
-							(currState().config.graduate
-								? JXRL_YJS_PREFIX
-								: JXRL_BKS_PREFIX) +
+							(graduate ? JXRL_YJS_PREFIX : JXRL_BKS_PREFIX) +
 								format(new Calendar(id * groupSize + 1, 1)) +
 								JXRL_MIDDLE +
 								format(new Calendar((id + 1) * groupSize, 7)) +
@@ -1077,10 +1076,11 @@ export const getSchedule = () => {
 		  );
 };
 
-export const getSecondary = () =>
-	mocked()
+export const getSecondary = (helper: InfoHelper) =>
+	helper.mocked()
 		? Promise.resolve([])
 		: retryWrapper(
+				helper,
 				792,
 				retrieve(SECONDARY_URL, JXMH_REFERER, undefined, "GBK").then((str) => {
 					const lowerBound = str.indexOf("function setInitValue");
@@ -1090,8 +1090,9 @@ export const getSecondary = () =>
 				// eslint-disable-next-line no-mixed-spaces-and-tabs
 		  );
 
-export const getSecondaryVerbose = () =>
+export const getSecondaryVerbose = (helper: InfoHelper) =>
 	retryWrapper(
+		helper,
 		792,
 		retrieve(SECONDARY_URL, JXMH_REFERER, undefined, "GBK").then((str) => {
 			const lowerBound = str.indexOf("function setInitValue");

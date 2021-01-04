@@ -1,6 +1,6 @@
 import React from "react";
 import {Text, View} from "react-native";
-import {retrieve} from "../../network/core";
+import {retrieve} from "../../helper/src/lib/core";
 import {POPI_URL} from "../../constants/strings";
 import {simpleRefreshListScreen} from "../../components/settings/simpleRefreshListScreen";
 

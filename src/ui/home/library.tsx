@@ -1,14 +1,13 @@
 import {Text, TouchableOpacity, View} from "react-native";
-import {getLibraryList} from "../../network/library";
 import {HomeNav} from "./homeStack";
 import {simpleRefreshListScreen} from "../../components/settings/simpleRefreshListScreen";
 import React from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import {getStr} from "src/utils/i18n";
-import {mocked} from "../../redux/store";
+import {helper} from "../../redux/store";
 
 export const LibraryScreen = simpleRefreshListScreen(
-	getLibraryList,
+	helper.getLibraryList,
 	(item, _, {navigation}: {navigation: HomeNav}) => (
 		<View>
 			<TouchableOpacity
@@ -40,7 +39,7 @@ export const LibraryScreen = simpleRefreshListScreen(
 		</View>
 	),
 	(item) => String(item.id),
-	mocked() ? undefined : (
+	helper.mocked() ? undefined : (
 		<View style={{padding: 6, margin: 4, alignItems: "center"}}>
 			<Text style={{textAlign: "center"}}>{getStr("socketIntro")}</Text>
 		</View>
@@ -54,7 +53,7 @@ export const LibraryScreen = simpleRefreshListScreen(
 				textAlign: "center",
 				marginVertical: 20,
 			}}>
-			{getStr(mocked() ? "chooseLibraryMocked" : "chooseLibrary")}
+			{getStr(helper.mocked() ? "chooseLibraryMocked" : "chooseLibrary")}
 		</Text>
 		<View style={{backgroundColor: "lightgray", height: 1}} />
 	</View>,

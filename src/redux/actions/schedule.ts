@@ -11,11 +11,11 @@ import {
 	SECONDARY_SCHEDULE_SUCCESS,
 } from "../constants";
 import {Dispatch} from "redux";
-import {getSchedule, getSecondary} from "../../network/schedule";
 import {PrimarySchedule, SecondarySchedule} from "../states/schedule";
 import {SCHEDULE_UPDATE_ALIAS} from "../constants";
-import {Lesson} from "../../models/schedule/schedule";
+import {Lesson} from "../../helper/src/models/schedule/schedule";
 import {Choice} from "../reducers/schedule";
+import {helper} from "../store";
 
 const primaryScheduleAction = createAsyncAction(
 	PRIMARY_SCHEDULE_REQUEST,
@@ -41,7 +41,8 @@ export const primaryScheduleThunk = () => (
 	dispatch: Dispatch<ScheduleAction>,
 ) => {
 	dispatch(primaryScheduleAction.request());
-	getSchedule()
+	helper
+		.getSchedule()
 		.then((res) =>
 			dispatch(primaryScheduleAction.success({primary: res[0], exam: res[1]})),
 		)
@@ -52,7 +53,8 @@ export const secondaryScheduleThunk = () => (
 	dispatch: Dispatch<ScheduleAction>,
 ) => {
 	dispatch(secondaryScheduleAction.request());
-	getSecondary()
+	helper
+		.getSecondary()
 		.then((res) => dispatch(secondaryScheduleAction.success({secondary: res})))
 		.catch(() => dispatch(secondaryScheduleAction.failure()));
 };

@@ -1,4 +1,4 @@
-import {Exam, Lesson} from "../../models/schedule/schedule";
+import {Exam, Lesson} from "../../helper/src/models/schedule/schedule";
 
 export interface PrimarySchedule {
 	primary: Lesson[];

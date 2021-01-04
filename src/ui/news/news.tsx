@@ -10,12 +10,6 @@ import {
 } from "react-native";
 import React, {useState, useEffect, useContext} from "react";
 import {
-	newsSlice,
-	getNewsList,
-	sourceTag,
-	getNewsDetail,
-} from "src/network/news";
-import {
 	FlatList,
 	TouchableOpacity,
 	TouchableWithoutFeedback,
@@ -30,7 +24,7 @@ import {
 	KYTZ_MAIN_PREFIX,
 	HB_MAIN_PREFIX,
 } from "src/constants/strings";
-import {State} from "../../redux/store";
+import {helper, State} from "../../redux/store";
 import {ADD_NEWS_CACHE} from "../../redux/constants";
 import {NewsCache} from "../../redux/states/cache";
 import {connect} from "react-redux";
@@ -39,6 +33,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import {ThemeContext} from "../../assets/themes/context";
 import themes from "../../assets/themes/themes";
+import {newsSlice, sourceTag} from "../../helper/src/models/news/news";
 
 dayjs.extend(customParseFormat);
 
@@ -63,13 +58,15 @@ class newsSourceList {
 	private async getLatestNews(source: sourceTag): Promise<newsSlice> {
 		for (let i = 0; i < 4; ++i) {
 			if (this.newsLoadList[i].length === 0) {
-				await getNewsList(
-					this.sourceList[i] + this.counterList[i],
-					this.nameList[i],
-				).then((res) => {
-					this.newsLoadList[i] = res;
-					this.counterList[i] += 1;
-				});
+				await helper
+					.getNewsList(
+						this.sourceList[i] + this.counterList[i],
+						this.nameList[i],
+					)
+					.then((res) => {
+						this.newsLoadList[i] = res;
+						this.counterList[i] += 1;
+					});
 			}
 		}
 
@@ -170,7 +167,7 @@ export const NewsUI = ({route, navigation, cache, addCache}: NewsUIProps) => {
 			.then((res) => {
 				res.forEach(({url, date}) => {
 					if (cache.get(url) === undefined) {
-						getNewsDetail(url).then(([_, __, abstract]) => {
+						helper.getNewsDetail(url).then(([_, __, abstract]) => {
 							addCache({
 								url,
 								timestamp: dayjs(date, "YYYY.MM.DD").toDate().valueOf(),
