@@ -15,7 +15,7 @@ import {PrimarySchedule, SecondarySchedule} from "../states/schedule";
 import {SCHEDULE_UPDATE_ALIAS} from "../constants";
 import {Lesson} from "../../helper/src/models/schedule/schedule";
 import {Choice} from "../reducers/schedule";
-import {helper} from "../store";
+import {currState, helper} from "../store";
 
 const primaryScheduleAction = createAsyncAction(
 	PRIMARY_SCHEDULE_REQUEST,
@@ -42,7 +42,7 @@ export const primaryScheduleThunk = () => (
 ) => {
 	dispatch(primaryScheduleAction.request());
 	helper
-		.getSchedule()
+		.getSchedule(currState().config.graduate)
 		.then((res) =>
 			dispatch(primaryScheduleAction.success({primary: res[0], exam: res[1]})),
 		)
