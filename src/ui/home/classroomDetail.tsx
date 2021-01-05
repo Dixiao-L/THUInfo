@@ -9,11 +9,11 @@ import React, {useContext, useEffect, useRef, useState} from "react";
 import {ClassroomDetailRouteProp} from "./homeStack";
 import {getStr} from "../../utils/i18n";
 import Snackbar from "react-native-snackbar";
-import {CalendarClass} from "../../helper/src";
 import Icon from "react-native-vector-icons/FontAwesome";
 import {ThemeContext} from "../../assets/themes/context";
 import themes from "../../assets/themes/themes";
 import {helper} from "../../redux/store";
+import {Calendar} from "thu-info-lib/lib/models/schedule/calendar";
 
 const colors = ["#26A69A", "#FFA726", "#29B6F6", "#868686", "#AB47BC"];
 
@@ -24,8 +24,8 @@ export const ClassroomDetailScreen = ({
 }) => {
 	const name = route.params.name;
 	const [data, setData] = useState<[number, number, [string, number[]][]]>([
-		new CalendarClass().weekNumber,
-		new CalendarClass().dayOfWeek,
+		new Calendar().weekNumber,
+		new Calendar().dayOfWeek,
 		[],
 	]);
 	const prev = useRef<[number, [string, number[]][]]>();
@@ -79,7 +79,7 @@ export const ClassroomDetailScreen = ({
 				.then((res) => (prev.current = [data[0] - 1, res]));
 		}
 		if (
-			data[0] < CalendarClass.weekCount &&
+			data[0] < Calendar.weekCount &&
 			(next.current === undefined || next.current[0] !== data[0] + 1)
 		) {
 			helper
@@ -119,8 +119,8 @@ export const ClassroomDetailScreen = ({
 				<Text
 					onPress={() =>
 						setData(([_, __, table]) => [
-							new CalendarClass().weekNumber,
-							new CalendarClass().dayOfWeek,
+							new Calendar().weekNumber,
+							new Calendar().dayOfWeek,
 							table,
 						])
 					}
@@ -140,20 +140,18 @@ export const ClassroomDetailScreen = ({
 						setData(([week, day, table]) =>
 							day < 7
 								? [week, day + 1, table]
-								: week < CalendarClass.weekCount
+								: week < Calendar.weekCount
 								? [week + 1, 1, table]
 								: [week, day, table],
 						)
 					}
-					disabled={data[0] === CalendarClass.weekCount && data[1] === 7}
+					disabled={data[0] === Calendar.weekCount && data[1] === 7}
 					style={{padding: 8}}>
 					<Icon
 						name="chevron-right"
 						size={24}
 						color={
-							data[0] === CalendarClass.weekCount && data[1] === 7
-								? "#888"
-								: "black"
+							data[0] === Calendar.weekCount && data[1] === 7 ? "#888" : "black"
 						}
 					/>
 				</TouchableOpacity>

@@ -13,9 +13,7 @@ import {
 	primaryScheduleThunk,
 	secondaryScheduleThunk,
 } from "../../redux/actions/schedule";
-import {Exam, Lesson, LessonType, matchHiddenRules} from "../../helper/src";
 import {Col, Grid, Row} from "react-native-easy-grid";
-import {CalendarClass} from "../../helper/src";
 import {ScheduleNav} from "./scheduleStack";
 import {getStr} from "../../utils/i18n";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -33,6 +31,13 @@ import {SCHEDULE_DEL_OR_HIDE} from "../../redux/constants";
 import {ThemeContext} from "../../assets/themes/context";
 import themes from "../../assets/themes/themes";
 import {Choice} from "src/redux/reducers/schedule";
+import {
+	Exam,
+	Lesson,
+	LessonType,
+	matchHiddenRules,
+} from "thu-info-lib/lib/models/schedule/schedule";
+import {Calendar} from "thu-info-lib/lib/models/schedule/calendar";
 
 const {SlideInMenu} = renderers;
 
@@ -141,7 +146,7 @@ const GridColumn = ({
 		<GridRow
 			key={0}
 			span={headerSpan}
-			text={`${new CalendarClass(week, day).format("MM.DD")}\n${
+			text={`${new Calendar(week, day).format("MM.DD")}\n${
 				getStr("dayOfWeek")[day]
 			}`}
 			unitHeight={unitHeight}
@@ -212,7 +217,7 @@ const OptionButton = ({
 };
 
 const ScheduleUI = (props: ScheduleProps) => {
-	const [week, setWeek] = useState(new CalendarClass().weekNumber);
+	const [week, setWeek] = useState(new Calendar().weekNumber);
 
 	const [overlap, setOverlap] = useState(false);
 
@@ -222,7 +227,7 @@ const ScheduleUI = (props: ScheduleProps) => {
 	const theme = themes[themeName];
 
 	useEffect(() => {
-		if (CalendarClass.semesterId !== props.cache) {
+		if (Calendar.semesterId !== props.cache) {
 			console.log(
 				"Schedule: Corresponding cache not found. Auto fetch from server.",
 			);
@@ -261,7 +266,7 @@ const ScheduleUI = (props: ScheduleProps) => {
 					/>
 				</TouchableOpacity>
 				<Text
-					onPress={() => setWeek(new CalendarClass().weekNumber)}
+					onPress={() => setWeek(new Calendar().weekNumber)}
 					style={{
 						fontSize: 18,
 						textAlign: "center",
@@ -271,14 +276,14 @@ const ScheduleUI = (props: ScheduleProps) => {
 				</Text>
 				<TouchableOpacity
 					onPress={() =>
-						setWeek((o) => (week < CalendarClass.weekCount ? o + 1 : o))
+						setWeek((o) => (week < Calendar.weekCount ? o + 1 : o))
 					}
-					disabled={week >= CalendarClass.weekCount}
+					disabled={week >= Calendar.weekCount}
 					style={{padding: 8}}>
 					<Icon
 						name="chevron-right"
 						size={24}
-						color={week < CalendarClass.weekCount ? "black" : "#888"}
+						color={week < Calendar.weekCount ? "black" : "#888"}
 					/>
 				</TouchableOpacity>
 			</View>

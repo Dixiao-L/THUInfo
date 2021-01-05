@@ -12,8 +12,12 @@ import {
 	SECONDARY_SCHEDULE_REQUEST,
 	SECONDARY_SCHEDULE_SUCCESS,
 } from "../constants";
-import {CalendarClass, LessonTypeEnum} from "../../helper/src";
-import {Exam, Lesson} from "../../helper/src";
+import {
+	Exam,
+	Lesson,
+	LessonType,
+} from "thu-info-lib/lib/models/schedule/schedule";
+import {Calendar} from "thu-info-lib/lib/models/schedule/calendar";
 
 export enum Choice {
 	ONCE,
@@ -51,7 +55,7 @@ export const schedule = (
 				...state,
 				primary: action.payload.primary,
 				exam: action.payload.exam,
-				cache: CalendarClass.semesterId,
+				cache: Calendar.semesterId,
 				shortenMap: addToDefaultShortenMap(
 					state.shortenMap,
 					action.payload.primary,
@@ -73,7 +77,7 @@ export const schedule = (
 			return {
 				...state,
 				secondary: action.payload.secondary,
-				cache: CalendarClass.semesterId,
+				cache: Calendar.semesterId,
 				shortenMap: addToDefaultShortenMap(
 					state.shortenMap,
 					action.payload.secondary,
@@ -101,7 +105,7 @@ export const schedule = (
 		}
 		case SCHEDULE_DEL_OR_HIDE: {
 			const [lesson, choice] = action.payload;
-			if (lesson.type === LessonTypeEnum.CUSTOM) {
+			if (lesson.type === LessonType.CUSTOM) {
 				return {
 					...state,
 					custom:

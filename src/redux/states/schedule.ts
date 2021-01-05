@@ -1,4 +1,4 @@
-import {Exam, Lesson} from "../../helper/src";
+import {Exam, Lesson} from "thu-info-lib/lib/models/schedule/schedule";
 
 export interface PrimarySchedule {
 	primary: Lesson[];

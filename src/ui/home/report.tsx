@@ -1,5 +1,4 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Course} from "../../helper/src";
 import {RefreshControl, SectionList, SectionListData} from "react-native";
 import {
 	ReportFooter,
@@ -13,6 +12,7 @@ import {ThemeContext} from "../../assets/themes/context";
 import themes from "../../assets/themes/themes";
 import {connect} from "react-redux";
 import {currState, helper, State} from "../../redux/store";
+import {Course} from "thu-info-lib/lib/models/home/report";
 
 export const semesterWeight = (semester: string): number => {
 	const year = Number(semester.slice(0, 4));

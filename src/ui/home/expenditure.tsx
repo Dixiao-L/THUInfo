@@ -9,8 +9,6 @@ import {
 	Text,
 	View,
 } from "react-native";
-import {Record} from "../../helper/src";
-import {CalendarClass} from "../../helper/src";
 import Snackbar from "react-native-snackbar";
 import {getStr} from "../../utils/i18n";
 import {DatePickerTrigger} from "../../components/DatePickerTrigger";
@@ -19,6 +17,8 @@ import themes from "../../assets/themes/themes";
 import {helper} from "../../redux/store";
 import {connect} from "react-redux";
 import {State} from "../../redux/store";
+import {Calendar} from "thu-info-lib/lib/models/schedule/calendar";
+import {Record} from "thu-info-lib/lib/models/home/expenditure";
 
 const ExpenditureCard = ({record}: {record: Record}) => {
 	return (
@@ -64,7 +64,7 @@ export const ExpenditureUI = ({shift}: {shift: number}) => {
 		[Record[], number, number, number]
 	>([[], 0, 0, 0]);
 
-	const today = new CalendarClass();
+	const today = new Calendar();
 	const [beg, setBeg] = useState(today.date.add(-1, "month").toDate());
 	const [end, setEnd] = useState(today.date.toDate());
 	const [refreshing, setRefreshing] = useState(false);
