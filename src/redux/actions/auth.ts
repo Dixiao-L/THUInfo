@@ -30,12 +30,13 @@ export const authThunk = (userId: string, password: string) => (
 	CookieManager.clearAll()
 		.then(() => helper.login(userId, password))
 		.then((r) => {
-			dispatch(authAction.success(r));
 			helper.setCredentials(r.userId, r.password);
+			helper.dormPassword = store.getState().credentials.dormPassword;
 			// Things that should be done only once upon logged in
 			helper.getTickets();
 			leanCloudInit();
 			refreshCalendarConfig();
+			dispatch(authAction.success(r));
 			// @ts-ignore
 			dispatch(fullNameThunk());
 		})
